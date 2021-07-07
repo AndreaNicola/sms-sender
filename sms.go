@@ -16,9 +16,9 @@ type SmsSender struct {
 	defaultRegion string
 }
 
-func (s *SmsSender) cleanNumber(formattedPhoneNumber string) string {
+func (sms2 *SmsSender) cleanNumber(formattedPhoneNumber string) string {
 
-	num, err := libphonenumber.Parse(formattedPhoneNumber, s.defaultRegion)
+	num, err := libphonenumber.Parse(formattedPhoneNumber, sms2.defaultRegion)
 	if err != nil {
 		panic(err)
 	}
@@ -38,11 +38,11 @@ func NewSmsSender(apiKey, defaultRegion, originator string) *SmsSender {
 
 }
 
-func (s *SmsSender) CreateVerifyToken(recipient string) (string, error) {
+func (sms2 *SmsSender) CreateVerifyToken(recipient string) (string, error) {
 
-	cn := s.cleanNumber(recipient)
-	v, err := verify.Create(s.client, cn, &verify.Params{
-		Originator: s.originator,
+	cn := sms2.cleanNumber(recipient)
+	v, err := verify.Create(sms2.client, cn, &verify.Params{
+		Originator: sms2.originator,
 		Timeout:    600,
 	})
 
@@ -55,9 +55,9 @@ func (s *SmsSender) CreateVerifyToken(recipient string) (string, error) {
 
 }
 
-func (s *SmsSender) VerifyToken(tokenId, token string) (bool, error) {
+func (sms2 *SmsSender) VerifyToken(tokenId, token string) (bool, error) {
 
-	v, err := verify.VerifyToken(s.client, tokenId, token)
+	v, err := verify.VerifyToken(sms2.client, tokenId, token)
 	if err == nil {
 		return v.Status == "verified", nil
 	} else {
@@ -66,7 +66,7 @@ func (s *SmsSender) VerifyToken(tokenId, token string) (bool, error) {
 
 }
 
-func (s *SmsSender) SendSms(text string, recipients ...string) error {
+func (sms2 *SmsSender) SendSms(text string, recipients ...string) error {
 
 	if len(recipients) <= 0 {
 		return errors.New("recipients must not be empty")
@@ -74,9 +74,9 @@ func (s *SmsSender) SendSms(text string, recipients ...string) error {
 
 	cns := make([]string, 0)
 	for _, cn := range recipients {
-		cns = append(cns, s.cleanNumber(cn))
+		cns = append(cns, sms2.cleanNumber(cn))
 	}
 
-	_, err := sms.Create(s.client, s.originator, cns, text, nil)
+	_, err := sms.Create(sms2.client, sms2.originator, cns, text, nil)
 	return err
 }
