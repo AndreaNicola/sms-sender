@@ -7,6 +7,10 @@ import (
 
 func (sms2 *SmsSender) ParseAndFormat(s string) (string, error) {
 
+	if s == "" {
+		return "", errors.New("phone number is empty")
+	}
+
 	parse, err := libphonenumber.Parse(s, sms2.defaultRegion)
 	if err != nil {
 		panic(err.Error())
