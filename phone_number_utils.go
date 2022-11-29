@@ -3,15 +3,20 @@ package sms_sender
 import (
 	"errors"
 	"github.com/ttacon/libphonenumber"
+	"strconv"
 )
 
-func (sms2 *SmsSender) ParseAndFormat(s string) (string, error) {
+func ParseAndFormat(number, defaultRegion string) (string, error) {
 
-	if s == "" {
+	if number == "" {
 		return "", errors.New("phone number is empty")
 	}
 
-	parse, err := libphonenumber.Parse(s, sms2.defaultRegion)
+	if defaultRegion == "" {
+		return "", errors.New("default region is empty")
+	}
+
+	parse, err := libphonenumber.Parse(number, defaultRegion)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -24,5 +29,17 @@ func (sms2 *SmsSender) ParseAndFormat(s string) (string, error) {
 	} else {
 		return "", errors.New("phone number is not valid")
 	}
+
+}
+
+func cleanNumber(formattedPhoneNumber, defaultRegion string) (string, error) {
+
+	num, err := libphonenumber.Parse(formattedPhoneNumber, defaultRegion)
+	if err != nil {
+		return "", err
+	}
+
+	cc := num.CountryCode
+	return strconv.FormatInt(int64(*cc), 10) + strconv.FormatUint(*num.NationalNumber, 10), nil
 
 }
