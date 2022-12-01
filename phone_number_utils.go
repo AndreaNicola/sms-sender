@@ -2,7 +2,7 @@ package sms_sender
 
 import (
 	"errors"
-	"github.com/ttacon/libphonenumber"
+	"github.com/nyaruka/phonenumbers"
 	"strconv"
 )
 
@@ -16,16 +16,16 @@ func ParseAndFormat(number, defaultRegion string) (string, error) {
 		return "", errors.New("default region is empty")
 	}
 
-	parse, err := libphonenumber.Parse(number, defaultRegion)
+	parse, err := phonenumbers.Parse(number, defaultRegion)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	numberType := libphonenumber.GetNumberType(parse)
-	valid := libphonenumber.IsValidNumber(parse)
+	numberType := phonenumbers.GetNumberType(parse)
+	valid := phonenumbers.IsValidNumber(parse)
 
-	if valid && *parse.CountryCode == int32(39) && (numberType == libphonenumber.MOBILE || numberType == libphonenumber.FIXED_LINE_OR_MOBILE) {
-		return libphonenumber.Format(parse, libphonenumber.INTERNATIONAL), nil
+	if valid && *parse.CountryCode == int32(39) && (numberType == phonenumbers.MOBILE || numberType == phonenumbers.FIXED_LINE_OR_MOBILE) {
+		return phonenumbers.Format(parse, phonenumbers.INTERNATIONAL), nil
 	} else {
 		return "", errors.New("phone number is not valid")
 	}
@@ -34,7 +34,7 @@ func ParseAndFormat(number, defaultRegion string) (string, error) {
 
 func cleanNumber(formattedPhoneNumber, defaultRegion string) (string, error) {
 
-	num, err := libphonenumber.Parse(formattedPhoneNumber, defaultRegion)
+	num, err := phonenumbers.Parse(formattedPhoneNumber, defaultRegion)
 	if err != nil {
 		return "", err
 	}
